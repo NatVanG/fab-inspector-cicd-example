@@ -1,0 +1,29 @@
+name: fab-inspector
+  
+on: 
+  push:
+    branches:
+      - main           
+
+  workflow_dispatch:
+
+jobs:
+
+  deploy:    
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out the code
+        uses: actions/checkout@v4
+
+      - name: Run base rules on reports
+        run: |
+          docker pull ghcr.io/natvang/fab-inspector:latest
+          docker run --rm \
+            -v "${{ github.workspace }}/src:/src" \
+            -v "${{ github.workspace }}/rules:/rules" \
+            ghcr.io/natvang/fab-inspector:latest \
+            -fabricitem /src -rules /rules/Base-rules.json -formats GitHub
+
+
+     
