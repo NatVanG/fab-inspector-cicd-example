@@ -14,8 +14,12 @@
             },
             {
               "map": [
-                { "part": "Visuals" },
-                { "var": "visual.visualType" }
+                {
+                  "part": "Visuals"
+                },
+                {
+                  "var": "visual.visualType"
+                }
               ]
             }
           ]
@@ -259,15 +263,13 @@
                   ]
                 }
               ]
-
             },
             {
               "var": "name"
             }
           ]
         },
-        {
-        },
+        {},
         []
       ]
     },
@@ -309,11 +311,12 @@
                 }
               ]
             },
-            { "var": "displayName" }
+            {
+              "var": "displayName"
+            }
           ]
         },
-        {
-        },
+        {},
         []
       ]
     },
@@ -368,8 +371,7 @@
             }
           ]
         },
-        {
-        },
+        {},
         []
       ]
     },
@@ -413,8 +415,7 @@
             }
           ]
         },
-        {
-        },
+        {},
         []
       ]
     },
@@ -456,11 +457,17 @@
                         {
                           "or": [
                             {
-                              "!!": [ { "var": "properties.altText.expr.Aggregation" } ]
+                              "!!": [
+                                {
+                                  "var": "properties.altText.expr.Aggregation"
+                                }
+                              ]
                             },
                             {
                               "!=": [
-                                { "var": "properties.altText.expr.Literal.Value" },
+                                {
+                                  "var": "properties.altText.expr.Literal.Value"
+                                },
                                 "''"
                               ]
                             }
