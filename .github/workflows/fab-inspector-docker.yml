@@ -20,6 +20,4 @@ jobs:
             -v "${{ github.workspace }}/fab-inspector-rules:/rules" \
             ghcr.io/natvang/fab-inspector:latest \
             -fabricitem /src -rules /rules/sample-report-rules.json -formats GitHub
-
-
      
