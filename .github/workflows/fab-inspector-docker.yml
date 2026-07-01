@@ -4,8 +4,7 @@ on:
   workflow_dispatch:
 
 jobs:
-
-  deploy:    
+  run-fab-inspector-docker:    
     runs-on: ubuntu-latest
 
     steps:
