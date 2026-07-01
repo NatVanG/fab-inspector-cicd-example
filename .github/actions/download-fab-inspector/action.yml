@@ -1,0 +1,44 @@
+name: Download Fab Inspector CLI
+description: Downloads and installs the Fab Inspector CLI binary to /usr/local/bin/fab-inspector
+
+inputs:
+  version:
+    description: "Fab Inspector release tag (e.g. v3.3.0) or 'latest'"
+    required: false
+    default: "latest"
+
+runs:
+  using: composite
+  steps:
+    - name: Install unzip
+      shell: bash
+      run: sudo apt-get update && sudo apt-get install -y unzip
+
+    - name: Download and install Fab Inspector CLI
+      shell: bash
+      env:
+        REQUESTED_VERSION: ${{ inputs.version }}
+      run: |
+        set -euo pipefail
+
+        VERSION="$REQUESTED_VERSION"
+        if [ "$VERSION" = "latest" ]; then
+          VERSION="$(curl -fsSL https://api.github.com/repos/NatVanG/fab-inspector/releases/latest | grep '"tag_name"' | sed -E 's/.*"([^"]+)".*/\1/')"
+        fi
+
+        DOWNLOAD_URL="https://github.com/NatVanG/fab-inspector/releases/download/${VERSION}/linux-x64-FabInspCLI.zip"
+        echo "Using release: ${VERSION}"
+        echo "Downloading: ${DOWNLOAD_URL}"
+
+        curl -fL "$DOWNLOAD_URL" -o FabInspCLI.zip
+        unzip -o FabInspCLI.zip -d fab-inspector-cli
+
+        FAB_INSP_BIN="$(find fab-inspector-cli -type f \( -name fab-inspector -o -name FabInspCLI \) | head -n 1)"
+        if [ -z "$FAB_INSP_BIN" ]; then
+          echo "Fab Inspector executable not found after unzip. ZIP contents:"
+          unzip -l FabInspCLI.zip || true
+          exit 1
+        fi
+
+        chmod +x "$FAB_INSP_BIN"
+        install -m 0755 "$FAB_INSP_BIN" /usr/local/bin/fab-inspector
