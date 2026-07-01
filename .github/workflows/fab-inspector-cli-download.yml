@@ -38,9 +38,9 @@ jobs:
           curl -fL "$DOWNLOAD_URL" -o FabInspCLI.zip
           unzip -o FabInspCLI.zip -d fab-inspector-cli
 
-          FAB_INSP_BIN="$(find fab-inspector-cli -type f -name FabInspCLI | head -n 1)"
+          FAB_INSP_BIN="$(find fab-inspector-cli -type f \( -name fab-inspector -o -name FabInspCLI \) | head -n 1)"
           if [ -z "$FAB_INSP_BIN" ]; then
-            echo "FabInspCLI not found after unzip. ZIP contents:"
+            echo "Fab Inspector executable not found after unzip. ZIP contents:"
             unzip -l FabInspCLI.zip || true
             exit 1
           fi
