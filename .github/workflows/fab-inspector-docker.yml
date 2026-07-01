@@ -1,4 +1,4 @@
-name: fab-inspector
+name: fab-inspector-docker
   
 on: 
   workflow_dispatch:
