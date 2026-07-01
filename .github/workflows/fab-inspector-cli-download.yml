@@ -38,14 +38,15 @@ jobs:
           curl -fL "$DOWNLOAD_URL" -o FabInspCLI.zip
           unzip -o FabInspCLI.zip -d fab-inspector-cli
 
-          FAB_INSP_BIN="fab-inspector-cli/linux-x64/FabInspCLI"
-          if [ ! -f "$FAB_INSP_BIN" ]; then
-            echo "Expected executable not found at: $FAB_INSP_BIN"
+          FAB_INSP_BIN="$(find fab-inspector-cli -type f -name FabInspCLI | head -n 1)"
+          if [ -z "$FAB_INSP_BIN" ]; then
+            echo "FabInspCLI not found after unzip. ZIP contents:"
+            unzip -l FabInspCLI.zip || true
             exit 1
           fi
 
           chmod +x "$FAB_INSP_BIN"
-          ln -sf "$FAB_INSP_BIN" /usr/local/bin/fab-inspector
+          install -m 0755 "$FAB_INSP_BIN" /usr/local/bin/fab-inspector
 
           fab-inspector \
             -fabricitem ./src \
