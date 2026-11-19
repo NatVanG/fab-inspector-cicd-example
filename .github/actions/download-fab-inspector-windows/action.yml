@@ -37,5 +37,5 @@ runs:
           tar -tf 'FabInspCLI.zip'
           throw 'Fab Inspector executable not found after extracting the release.'
         }
-        Copy-Item $executable.FullName (Join-Path $binDir 'fab-inspector.exe')
+        Copy-Item (Join-Path $executable.Directory.FullName '*') $binDir -Recurse -Force
         Add-Content $env:GITHUB_PATH $binDir

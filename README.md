@@ -34,7 +34,7 @@ This repo includes four manual (`workflow_dispatch`) examples:
 		- `latest` (default) resolves the latest GitHub release tag.
 		- Or specify an explicit tag, for example `v3.4.0`.
 	- Accepts a `runner` input with `ubuntu-latest` (default), `windows-latest`, or `macos-latest`.
-	- Downloads the matching CLI release, adds it to `PATH`, and runs:
+	- Downloads the matching CLI release, keeps its runtime files together, adds its directory to `PATH`, and runs:
 		- `-fabricitem ./src`
 		- `-rules ./fab-inspector-rules/sample-report-rules.json`
 		- `-formats GitHub`

@@ -42,5 +42,6 @@ runs:
 
         BIN_DIR="$RUNNER_TEMP/fab-inspector-cli-bin"
         mkdir -p "$BIN_DIR"
-        install -m 0755 "$FAB_INSP_BIN" "$BIN_DIR/fab-inspector"
+        cp -R "$(dirname "$FAB_INSP_BIN")/." "$BIN_DIR/"
+        chmod +x "$BIN_DIR/$(basename "$FAB_INSP_BIN")"
         echo "$BIN_DIR" >> "$GITHUB_PATH"
