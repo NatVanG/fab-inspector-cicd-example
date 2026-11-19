@@ -25,6 +25,12 @@ jobs:
       - name: Check out the code
         uses: actions/checkout@v5
 
+      - name: Set up .NET runtimes
+        if: inputs.runner == 'macos-latest'
+        uses: actions/setup-dotnet@v5
+        with:
+          dotnet-version: 10.0.x
+
       - name: Download and install Fab Inspector CLI on Linux
         if: inputs.runner == 'ubuntu-latest'
         uses: ./.github/actions/download-fab-inspector-linux
