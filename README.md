@@ -29,11 +29,12 @@ This repo includes four manual (`workflow_dispatch`) examples:
 	- Provides authenticated access to Fabric resources and want to persist results to OneLake.
 
 - `.github/workflows/fab-inspector-cli-download.yml`
-	- Downloads and runs the Linux Fab Inspector CLI release directly in the runner.
+	- Downloads and runs the Fab Inspector CLI release for the selected runner operating system.
 	- Accepts an optional `version` input:
 		- `latest` (default) resolves the latest GitHub release tag.
 		- Or specify an explicit tag, for example `v3.4.0`.
-	- Downloads `linux-x64-FabInspCLI.zip`, unzips, marks executable, and runs:
+	- Accepts a `runner` input with `ubuntu-latest` (default), `windows-latest`, or `macos-latest`.
+	- Downloads the matching CLI release, adds it to `PATH`, and runs:
 		- `-fabricitem ./src`
 		- `-rules ./fab-inspector-rules/sample-report-rules.json`
 		- `-formats GitHub`
@@ -41,8 +42,8 @@ This repo includes four manual (`workflow_dispatch`) examples:
 
 - `.github/workflows/fab-inspector-cli-download-clientsecret.yml`
 	- Variant of the CLI download workflow that authenticates using a service principal (client secret).
-	- Accepts the same optional `version` input as the standard CLI workflow.
-	- Uses a reusable action (`.github/actions/download-fab-inspector`) to handle the download and install step.
+	- Accepts the same `version` and `runner` inputs as the standard CLI workflow.
+	- Uses the runner-specific download actions under `.github/actions/` to handle the download and install step.
 	- Additionally passes `-authmethod clientsecret` along with `FABRIC_CLIENT_ID`, `FABRIC_TENANT_ID`, and `FABRIC_CLIENT_SECRET` secrets.
 	- Writes results to a OneLake output folder (`ONELAKE_OUTPUT_FOLDER` variable) and uses `-formats "GitHub,JSON"`.
 	- Provides authenticated access to Fabric resources and want version-pinned CLI with results persisted to OneLake.
@@ -57,7 +58,7 @@ This repo includes four manual (`workflow_dispatch`) examples:
 	 - `fab-inspector-cli`
 	 - `fab-inspector-cli-clientsecret`
 4. Click **Run workflow**.
-5. For `fab-inspector-cli` or `fab-inspector-cli-clientsecret`, optionally set `version` (for example `v3.3.0`) and run.
+5. For `fab-inspector-cli` or `fab-inspector-cli-clientsecret`, select `runner` and optionally set `version` (for example `v3.3.0`), then run.
 6. For the `clientsecret` variants, ensure the `FABRIC_CLIENT_ID`, `FABRIC_TENANT_ID`, and `FABRIC_CLIENT_SECRET` secrets and the `ONELAKE_OUTPUT_FOLDER` variable are configured in your repository settings. :warning: **Do not commit secrets to source control.** Use GitHub secrets for sensitive values.
 6. Review results in the workflow logs and annotations (GitHub format output).
 

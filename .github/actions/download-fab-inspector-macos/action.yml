@@ -1,0 +1,46 @@
+name: Download Fab Inspector CLI for macOS
+description: Downloads and installs the Fab Inspector CLI binary on a macOS runner
+
+inputs:
+  version:
+    description: "Fab Inspector release tag (e.g. v3.3.0) or 'latest'"
+    required: false
+    default: "latest"
+
+runs:
+  using: composite
+  steps:
+    - name: Download and install Fab Inspector CLI
+      shell: bash
+      env:
+        REQUESTED_VERSION: ${{ inputs.version }}
+      run: |
+        set -euo pipefail
+
+        VERSION="$REQUESTED_VERSION"
+        if [ "$VERSION" = "latest" ]; then
+          VERSION="$(curl -fsSL https://api.github.com/repos/NatVanG/fab-inspector/releases/latest | grep '"tag_name"' | sed -E 's/.*"([^"]+)".*/\1/')"
+        fi
+
+        if [ "$(uname -m)" = "arm64" ]; then
+          PLATFORM="osx-arm64"
+        else
+          PLATFORM="osx-x64"
+        fi
+
+        curl -fL \
+          "https://github.com/NatVanG/fab-inspector/releases/download/${VERSION}/${PLATFORM}-FabInspCLI.zip" \
+          -o FabInspCLI.zip
+        unzip -o FabInspCLI.zip -d fab-inspector-cli
+
+        FAB_INSP_BIN="$(find fab-inspector-cli -type f \( -name fab-inspector -o -name FabInspCLI \) | head -n 1)"
+        if [ -z "$FAB_INSP_BIN" ]; then
+          echo "Fab Inspector executable not found after unzip. ZIP contents:"
+          unzip -l FabInspCLI.zip || true
+          exit 1
+        fi
+
+        BIN_DIR="$RUNNER_TEMP/fab-inspector-cli-bin"
+        mkdir -p "$BIN_DIR"
+        install -m 0755 "$FAB_INSP_BIN" "$BIN_DIR/fab-inspector"
+        echo "$BIN_DIR" >> "$GITHUB_PATH"

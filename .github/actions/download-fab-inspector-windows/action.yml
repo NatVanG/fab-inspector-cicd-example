@@ -1,0 +1,41 @@
+name: Download Fab Inspector CLI for Windows
+description: Downloads and installs the Fab Inspector CLI binary on a Windows runner
+
+inputs:
+  version:
+    description: "Fab Inspector release tag (e.g. v3.3.0) or 'latest'"
+    required: false
+    default: "latest"
+
+runs:
+  using: composite
+  steps:
+    - name: Download and install Fab Inspector CLI
+      shell: pwsh
+      env:
+        REQUESTED_VERSION: ${{ inputs.version }}
+      run: |
+        $ErrorActionPreference = 'Stop'
+
+        $version = $env:REQUESTED_VERSION
+        if ($version -eq 'latest') {
+          $version = (Invoke-RestMethod 'https://api.github.com/repos/NatVanG/fab-inspector/releases/latest').tag_name
+        }
+
+        Invoke-WebRequest `
+          "https://github.com/NatVanG/fab-inspector/releases/download/$version/win-x64-FabInspCLI.zip" `
+          -OutFile 'FabInspCLI.zip'
+        Expand-Archive 'FabInspCLI.zip' 'fab-inspector-cli' -Force
+
+        $binDir = Join-Path $env:RUNNER_TEMP 'fab-inspector-cli-bin'
+        New-Item -ItemType Directory -Path $binDir -Force | Out-Null
+        $executable = Get-ChildItem 'fab-inspector-cli' -Recurse -File |
+          Where-Object { $_.Name -in @('fab-inspector.exe', 'FabInspCLI.exe') } |
+          Select-Object -First 1
+        if (-not $executable) {
+          Write-Host 'Fab Inspector executable not found after unzip. ZIP contents:'
+          tar -tf 'FabInspCLI.zip'
+          throw 'Fab Inspector executable not found after extracting the release.'
+        }
+        Copy-Item $executable.FullName (Join-Path $binDir 'fab-inspector.exe')
+        Add-Content $env:GITHUB_PATH $binDir

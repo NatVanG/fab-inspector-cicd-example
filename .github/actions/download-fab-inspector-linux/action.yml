@@ -1,5 +1,5 @@
-name: Download Fab Inspector CLI
-description: Downloads and installs the Fab Inspector CLI binary to /usr/local/bin/fab-inspector
+name: Download Fab Inspector CLI for Linux
+description: Downloads and installs the Fab Inspector CLI binary on a Linux runner
 
 inputs:
   version:
@@ -10,10 +10,6 @@ inputs:
 runs:
   using: composite
   steps:
-    - name: Install unzip
-      shell: bash
-      run: sudo apt-get update && sudo apt-get install -y unzip
-
     - name: Download and install Fab Inspector CLI
       shell: bash
       env:
@@ -26,11 +22,9 @@ runs:
           VERSION="$(curl -fsSL https://api.github.com/repos/NatVanG/fab-inspector/releases/latest | grep '"tag_name"' | sed -E 's/.*"([^"]+)".*/\1/')"
         fi
 
-        DOWNLOAD_URL="https://github.com/NatVanG/fab-inspector/releases/download/${VERSION}/linux-x64-FabInspCLI.zip"
-        echo "Using release: ${VERSION}"
-        echo "Downloading: ${DOWNLOAD_URL}"
-
-        curl -fL "$DOWNLOAD_URL" -o FabInspCLI.zip
+        curl -fL \
+          "https://github.com/NatVanG/fab-inspector/releases/download/${VERSION}/linux-x64-FabInspCLI.zip" \
+          -o FabInspCLI.zip
         unzip -o FabInspCLI.zip -d fab-inspector-cli
 
         FAB_INSP_BIN="$(find fab-inspector-cli -type f \( -name fab-inspector -o -name FabInspCLI \) | head -n 1)"
@@ -40,5 +34,7 @@ runs:
           exit 1
         fi
 
-        chmod +x "$FAB_INSP_BIN"
-        install -m 0755 "$FAB_INSP_BIN" /usr/local/bin/fab-inspector
+        BIN_DIR="$RUNNER_TEMP/fab-inspector-cli-bin"
+        mkdir -p "$BIN_DIR"
+        install -m 0755 "$FAB_INSP_BIN" "$BIN_DIR/fab-inspector"
+        echo "$BIN_DIR" >> "$GITHUB_PATH"

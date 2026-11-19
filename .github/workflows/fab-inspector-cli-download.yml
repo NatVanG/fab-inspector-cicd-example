@@ -7,19 +7,41 @@ on:
         description: "Fab Inspector release tag (for example: v3.3.0) or 'latest'"
         required: false
         default: "latest"
+      runner:
+        description: "Runner operating system"
+        required: true
+        type: choice
+        options:
+          - ubuntu-latest
+          - windows-latest
+          - macos-latest
+        default: ubuntu-latest
 
 jobs:
   run-fab-inspector-cli:
-    runs-on: ubuntu-latest
+    runs-on: ${{ inputs.runner || 'ubuntu-latest' }}
 
     steps:
       - name: Check out the code
         uses: actions/checkout@v5
 
-      - name: Download and install Fab Inspector CLI
-        uses: ./.github/actions/download-fab-inspector
+      - name: Download and install Fab Inspector CLI on Linux
+        if: inputs.runner == 'ubuntu-latest'
+        uses: ./.github/actions/download-fab-inspector-linux
         with:
-          version: ${{ github.event.inputs.version || 'latest' }}
+          version: ${{ inputs.version || 'latest' }}
+
+      - name: Download and install Fab Inspector CLI on Windows
+        if: inputs.runner == 'windows-latest'
+        uses: ./.github/actions/download-fab-inspector-windows
+        with:
+          version: ${{ inputs.version || 'latest' }}
+
+      - name: Download and install Fab Inspector CLI on macOS
+        if: inputs.runner == 'macos-latest'
+        uses: ./.github/actions/download-fab-inspector-macos
+        with:
+          version: ${{ inputs.version || 'latest' }}
 
       - name: Run Fab Inspector CLI
         shell: bash
